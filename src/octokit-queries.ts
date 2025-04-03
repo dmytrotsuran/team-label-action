@@ -7,13 +7,29 @@ export const getTeamSlugsForAuthor = async (
   username: string,
   ignoreSlugs: string[] = [],
 ): Promise<string[]> => {
-  const { data: allTeams } = await octokit.rest.teams.list({
-    org,
-  });
-
   const authorsTeamSlugs: string[] = [];
 
-  for await (const { slug } of allTeams) {
+  let page = 1;
+  let hasMorePages = true;
+  const allTeams = [];
+
+  while (hasMorePages) {
+    const { data: teams } = await octokit.rest.teams.list({
+      org,
+      page,
+      per_page: 100, // Fetch 100 results per page
+    });
+
+    allTeams.push(...teams);
+
+    if (teams.length < 100) {
+      hasMorePages = false; // No more pages if the current page has fewer than 100 items
+    } else {
+      page++;
+    }
+  }
+
+  for (const { slug } of allTeams) {
     if (ignoreSlugs.includes(slug)) {
       continue;
     }
@@ -29,8 +45,7 @@ export const getTeamSlugsForAuthor = async (
         authorsTeamSlugs.push(slug);
       }
     } catch (error) {
-      // Octokit query fails when username is not member of a team, see https://octokit.github.io/rest.js/v18
-      core.info(`${username} not a member of ${slug}`);
+      core.info(`${username} not a member of team: ${slug}`);
     }
   }
 
