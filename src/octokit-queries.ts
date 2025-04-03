@@ -11,13 +11,14 @@ export const getTeamSlugsForAuthor = async (
 
   let page = 1;
   let hasMorePages = true;
-  const allTeams = [];
+  let team_slug = 'b2b-connect-ordering-ngo';
 
+  const allTeams = [];
   while (hasMorePages) {
-    const { data: teams } = await octokit.rest.teams.list({
+    const { data: teams } = await octokit.rest.teams.listChildInOrg({
       org,
-      page,
-      per_page: 100, // Fetch 100 results per page
+      team_slug,
+      per_page: 100,
     });
 
     allTeams.push(...teams);

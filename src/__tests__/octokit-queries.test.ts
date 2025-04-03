@@ -9,7 +9,7 @@ describe('getTeamSlugsForAuthor', () => {
     octokit = {
       rest: {
         teams: {
-          list: jest.fn(async () =>
+          listChildInOrg: jest.fn(async () =>
             Promise.resolve({
               data: [
                 { slug: 'team-active' },
