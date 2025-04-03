@@ -9,28 +9,14 @@ export const getTeamSlugsForAuthor = async (
 ): Promise<string[]> => {
   const authorsTeamSlugs: string[] = [];
 
-  let page = 1;
-  let hasMorePages = true;
   let team_slug = 'b2b-connect-ordering-ngo';
 
-  const allTeams = [];
-  while (hasMorePages) {
-    const { data: teams } = await octokit.rest.teams.listChildInOrg({
-      org,
-      team_slug,
-      per_page: 100,
-    });
+  const { data: teams } = await octokit.rest.teams.listChildInOrg({
+    org,
+    team_slug,
+  });
 
-    allTeams.push(...teams);
-
-    if (teams.length < 100) {
-      hasMorePages = false; // No more pages if the current page has fewer than 100 items
-    } else {
-      page++;
-    }
-  }
-
-  for (const { slug } of allTeams) {
+  for (const { slug } of teams) {
     if (ignoreSlugs.includes(slug)) {
       continue;
     }

@@ -146,24 +146,12 @@ exports.getTeamSlugsForAuthor = void 0;
 const core = __importStar(__nccwpck_require__(2186));
 const getTeamSlugsForAuthor = (octokit, org, username, ignoreSlugs = []) => __awaiter(void 0, void 0, void 0, function* () {
     const authorsTeamSlugs = [];
-    let page = 1;
-    let hasMorePages = true;
-    const allTeams = [];
-    while (hasMorePages) {
-        const { data: teams } = yield octokit.rest.teams.list({
-            org,
-            page,
-            per_page: 100, // Fetch 100 results per page
-        });
-        allTeams.push(...teams);
-        if (teams.length < 100) {
-            hasMorePages = false; // No more pages if the current page has fewer than 100 items
-        }
-        else {
-            page++;
-        }
-    }
-    for (const { slug } of allTeams) {
+    let team_slug = 'b2b-connect-ordering-ngo';
+    const { data: teams } = yield octokit.rest.teams.listChildInOrg({
+        org,
+        team_slug,
+    });
+    for (const { slug } of teams) {
         if (ignoreSlugs.includes(slug)) {
             continue;
         }
