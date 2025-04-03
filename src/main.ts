@@ -6,6 +6,7 @@ import { parseInputList } from './functions';
 const run = async (): Promise<void> => {
   try {
     const org = core.getInput('organization-name', { required: true });
+    const parentTeam = core.getInput('parent-team', { required: true });
 
     // Get author, PR number from context
     const pullRequest = context.payload.pull_request;
@@ -29,7 +30,13 @@ const run = async (): Promise<void> => {
     const ignoreLabels = parseInputList(core.getInput('ignore-labels'));
 
     // Get all teams in the organization where the PR author is a member
-    const authorsTeamSlugs = await getTeamSlugsForAuthor(octokit, org, author, ignoreLabels);
+    const authorsTeamSlugs = await getTeamSlugsForAuthor(
+      octokit,
+      org,
+      parentTeam,
+      author,
+      ignoreLabels,
+    );
 
     if (authorsTeamSlugs.length < 1) {
       core.info(`${author} does not belong to any teams`);

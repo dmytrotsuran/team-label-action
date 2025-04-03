@@ -4,12 +4,11 @@ import { GitHub } from '@actions/github/lib/utils';
 export const getTeamSlugsForAuthor = async (
   octokit: InstanceType<typeof GitHub>,
   org: string,
+  team_slug: string,
   username: string,
   ignoreSlugs: string[] = [],
 ): Promise<string[]> => {
   const authorsTeamSlugs: string[] = [];
-
-  let team_slug = 'b2b-connect-ordering-ngo';
 
   const { data: teams } = await octokit.rest.teams.listChildInOrg({
     org,

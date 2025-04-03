@@ -64,6 +64,7 @@ const functions_1 = __nccwpck_require__(358);
 const run = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const org = core.getInput('organization-name', { required: true });
+        const parentTeam = core.getInput('parent-team', { required: true });
         // Get author, PR number from context
         const pullRequest = github_1.context.payload.pull_request;
         if (!pullRequest) {
@@ -79,7 +80,7 @@ const run = () => __awaiter(void 0, void 0, void 0, function* () {
         const octokit = (0, github_1.getOctokit)(token);
         const ignoreLabels = (0, functions_1.parseInputList)(core.getInput('ignore-labels'));
         // Get all teams in the organization where the PR author is a member
-        const authorsTeamSlugs = yield (0, octokit_queries_1.getTeamSlugsForAuthor)(octokit, org, author, ignoreLabels);
+        const authorsTeamSlugs = yield (0, octokit_queries_1.getTeamSlugsForAuthor)(octokit, org, parentTeam, author, ignoreLabels);
         if (authorsTeamSlugs.length < 1) {
             core.info(`${author} does not belong to any teams`);
             return;
@@ -144,9 +145,8 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
 Object.defineProperty(exports, "__esModule", ({ value: true }));
 exports.getTeamSlugsForAuthor = void 0;
 const core = __importStar(__nccwpck_require__(2186));
-const getTeamSlugsForAuthor = (octokit, org, username, ignoreSlugs = []) => __awaiter(void 0, void 0, void 0, function* () {
+const getTeamSlugsForAuthor = (octokit, org, team_slug, username, ignoreSlugs = []) => __awaiter(void 0, void 0, void 0, function* () {
     const authorsTeamSlugs = [];
-    let team_slug = 'b2b-connect-ordering-ngo';
     const { data: teams } = yield octokit.rest.teams.listChildInOrg({
         org,
         team_slug,
