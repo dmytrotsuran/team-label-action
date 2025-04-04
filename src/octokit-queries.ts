@@ -10,8 +10,6 @@ export const getTeamSlugsForAuthor = async (
 ): Promise<string[]> => {
   const authorsTeamSlugs: string[] = [];
 
-  core.info('Starting getting team slugs');
-
   const { data: teams } = await octokit.rest.teams.listChildInOrg({
     org,
     team_slug,
